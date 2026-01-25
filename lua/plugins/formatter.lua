@@ -62,6 +62,20 @@ return { -- Autoformat
 
     local config = vim.tbl_deep_extend("force", opts, {
       formatters = {
+        stylua = {
+          -- Use config from Neovim config directory if no local config
+          prepend_args = function(ctx)
+            -- Check if a local stylua.toml exists
+            local local_config = vim.fn.findfile("stylua.toml", ".;")
+            if local_config == "" then
+              return {
+                "--config-path",
+                vim.fn.expand("~/.config/nvim/stylua.toml"),
+              }
+            end
+            return {}
+          end,
+        },
         prettier = {
           require_cwd = true,
           cwd = require("conform.util").root_file({

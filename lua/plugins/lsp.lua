@@ -18,99 +18,10 @@ return {
       },
     },
   },
-  {
-    "nvim-flutter/flutter-tools.nvim",
-    lazy = false,
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "stevearc/dressing.nvim", -- optional for vim.ui.select
-    },
-    config = true,
-  },
   { "j-hui/fidget.nvim", opts = {} },
   {
     "mfussenegger/nvim-dap",
   },
-  {
-    {
-      "stevearc/oil.nvim",
-      ---@module 'oil'
-      ---@type oil.SetupOpts
-      opts = {},
-      -- Optional dependencies
-      -- dependencies = { { "nvim-mini/mini.icons", opts = {} } },
-      dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if you prefer nvim-web-devicons
-      -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
-      lazy = false,
-    },
-    "AlexandrosAlexiou/kotlin.nvim",
-    ft = { "kotlin", "kts" },
-    dependencies = { "mason.nvim", "mason-lspconfig.nvim", "oil.nvim" },
-    config = function()
-      require("kotlin").setup({
-        -- Optional: Specify root markers for multi-module projects
-        root_markers = {
-          "gradlew",
-          ".git",
-          "mvnw",
-          "settings.gradle",
-          "settings.gradle.kts",
-        },
-      })
-    end,
-  },
-  -- {
-  --   "scalameta/nvim-metals",
-  --   dependencies = {
-  --     "nvim-lua/plenary.nvim",
-  --     "j-hui/fidget.nvim",
-  --     "mfussenegger/nvim-dap",
-  --   },
-  --   ft = { "scala", "java", "sbt", "kotlin", "kt", "kts" },
-  --   opts = function()
-  --     local metals_config = require("metals").bare_config()
-  --
-  --     -- Example of settings
-  --     metals_config.settings = {
-  --       showImplicitArguments = true,
-  --       excludedPackages = { "akka.actor.typed.javadsl", "com.github.swagger.akka.javadsl" },
-  --     }
-  --
-  --     -- *READ THIS*
-  --     -- I *highly* recommend setting statusBarProvider to either "off" or "on"
-  --     --
-  --     -- "off" will enable LSP progress notifications by Metals and you'll need
-  --     -- to ensure you have a plugin like fidget.nvim installed to handle them.
-  --     --
-  --     -- "on" will enable the custom Metals status extension and you *have* to have
-  --     -- a have settings to capture this in your statusline or else you'll not see
-  --     -- any messages from metals. There is more info in the help docs about this
-  --     metals_config.init_options.statusBarProvider = "on"
-  --
-  --     -- Example if you are using cmp how to make sure the correct capabilities for snippets are set
-  --     metals_config.capabilities = require("cmp_nvim_lsp").default_capabilities()
-  --     metals_config.on_attach = function(client, bufnr)
-  --       require("metals").setup_dap()
-  --     end
-  --
-  --     return metals_config
-  --   end,
-  --   config = function(self, metals_config)
-  --     local metals = require("metals")
-  --     local nvim_metals_group = vim.api.nvim_create_augroup("nvim-metals", { clear = true })
-  --     vim.api.nvim_create_autocmd("FileType", {
-  --       pattern = self.ft,
-  --       callback = function()
-  --         require("metals").initialize_or_attach(metals_config)
-  --       end,
-  --       group = nvim_metals_group,
-  --     })
-  --
-  --     vim.keymap.set("n", "<leader>mc", function()
-  --       require("telescope").extensions.metals.commands()
-  --     end, { desc = "Metals Commands" })
-  --   end,
-  -- },
   {
     "williamboman/mason.nvim",
     keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
@@ -135,7 +46,6 @@ return {
       capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
 
       local servers = {
-        ast_grep = {},
         bashls = {},
         clangd = {},
         gopls = {},
@@ -143,7 +53,21 @@ return {
         pyright = {},
         sqlls = {},
         gradle_ls = {},
-        kotlin_lsp = {},
+        kotlin_lsp = {
+          cmd = { "/usr/bin/kotlin-lsp" },
+          root_markers = {
+            "gradlew",
+            ".git",
+            "mvnw",
+            "settings.gradle",
+            "settings.gradle.kts",
+            "build.gradle",
+            "build.gradle.kts",
+          },
+          jvm_args = {
+            "-Xmx4g", -- Increase max heap (useful for large projects)
+          },
+        },
         jdtls = {},
         dcm = {},
         html = {
@@ -235,7 +159,6 @@ return {
         "cpplint",
         "hadolint",
         "checkmake",
-        "detekt",
 
         -- Formatters/Linters
         "ktlint",
