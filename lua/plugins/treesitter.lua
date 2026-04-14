@@ -1,7 +1,8 @@
 return { -- Highlight, edit, and navigate code
   "nvim-treesitter/nvim-treesitter",
+  branch = "master", -- Lock to master for Neovim 0.11/0.13 compatibility
   build = ":TSUpdate",
-  cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
+  cmd = { "TSUpdate", "TSInstall" },
   main = "nvim-treesitter.configs", -- Sets main module to use for opts
   keys = {
     { "<c-space>", desc = "Increment Selection" },
@@ -37,8 +38,6 @@ return { -- Highlight, edit, and navigate code
       "astro",
       "svelte",
       "json5",
-      "markdown",
-      "markdown_inline",
       "go",
       "gomod",
       "gowork",

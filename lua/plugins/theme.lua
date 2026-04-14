@@ -84,8 +84,8 @@ return {
           vim.cmd.source(transparency_file)
 
           -- Trigger UI updates for various plugins
-          vim.api.nvim_exec_autocmds("ColorScheme", { modeline = false })
-          vim.api.nvim_exec_autocmds("VimEnter", { modeline = false })
+          vim.cmd("doautocmd ColorScheme")
+          vim.cmd("doautocmd VimEnter")
 
           -- Final redraw
           vim.cmd("redraw!")

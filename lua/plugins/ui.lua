@@ -333,17 +333,43 @@ return {
           header = vim.split(logo, "\n"),
           -- stylua: ignore
           center = {
-            { action = "lua LazyVim.pick()()", desc = " Find File", icon = " ", key = "f" },
+            {
+              action = function()
+                require("telescope.builtin").find_files()
+              end,
+              desc = " Find File",
+              icon = " ",
+              key = "f",
+            },
             { action = "ene | startinsert", desc = " New File", icon = " ", key = "n" },
-            { action = 'lua LazyVim.pick("oldfiles")()', desc = " Recent Files", icon = " ", key = "r" },
-            { action = 'lua LazyVim.pick("live_grep")()', desc = " Find Text", icon = " ", key = "g" },
-            { action = "lua LazyVim.pick.config_files()()", desc = " Config", icon = " ", key = "c" },
-            { action = 'lua require("persistence").load()', desc = " Restore Session", icon = " ", key = "s" },
-            { action = "LazyExtras", desc = " Lazy Extras", icon = " ", key = "x" },
+            {
+              action = function()
+                require("telescope.builtin").oldfiles()
+              end,
+              desc = " Recent Files",
+              icon = " ",
+              key = "r",
+            },
+            {
+              action = function()
+                require("telescope.builtin").live_grep()
+              end,
+              desc = " Find Text",
+              icon = " ",
+              key = "g",
+            },
+            {
+              action = function()
+                require("telescope.builtin").find_files({ cwd = vim.fn.stdpath("config") })
+              end,
+              desc = " Config",
+              icon = " ",
+              key = "c",
+            },
             { action = "Lazy", desc = " Lazy", icon = "󰒲 ", key = "l" },
             {
               action = function()
-                vim.api.nvim_input("<cmd>qa<cr>")
+                vim.cmd("qa")
               end,
               desc = " Quit",
               icon = " ",
@@ -359,7 +385,7 @@ return {
       }
 
       for _, button in ipairs(opts.config.center) do
-        button.desc = button.desc .. string.rep(" ", 43 - #button.desc)
+        button.desc = (button.desc or "") .. string.rep(" ", 43 - #(button.desc or ""))
         button.key_format = "  %s"
       end
 
@@ -370,7 +396,7 @@ return {
           once = true,
           callback = function()
             vim.schedule(function()
-              vim.api.nvim_exec_autocmds("UIEnter", { group = "dashboard" })
+              vim.cmd("doautocmd UIEnter")
             end)
           end,
         })

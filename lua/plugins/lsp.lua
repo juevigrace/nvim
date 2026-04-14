@@ -131,7 +131,6 @@ return {
         "prettierd",
         "google-java-format",
         "goimports",
-        "gofumpt",
         "clang-format",
         "sqlfmt",
         "yamlfmt",
@@ -148,7 +147,7 @@ return {
 
         -- Linters
         "shellcheck",
-        "luacheck",
+        "gospel",
         "pylint",
         "sqlfluff",
         "eslint_d",

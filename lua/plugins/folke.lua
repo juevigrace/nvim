@@ -32,7 +32,7 @@ return {
       {
         "]t",
         function()
-          require("stodo-comments").jump_next()
+          require("todo-comments").jump_next()
         end,
         desc = "Next Todo Comment",
       },
