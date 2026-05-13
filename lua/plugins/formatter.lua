@@ -47,14 +47,13 @@ return { -- Autoformat
       markdown = { "prettier", "prettierd" },
       -- Conform can also run multiple formatters sequentially
       nix = { "alejandra" },
-      go = { "goimports", "gofumpt", stop_after_first = true },
+      go = { "goimports", stop_after_first = true },
       kotlin = { "ktlint" },
       kotlin_script = { "ktlint" },
       java = { "google-java-format" },
       sql = { "sqlfmt" },
       cpp = { "clang_format" },
       c = { "clang_format" },
-      dart = { "dcm" },
     },
   },
   config = function(_, opts)

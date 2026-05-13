@@ -69,7 +69,6 @@ return {
           },
         },
         jdtls = {},
-        dcm = {},
         html = {
           filetypes = { "html", "astro" },
         },
@@ -149,7 +148,6 @@ return {
         "shellcheck",
         "gospel",
         "pylint",
-        "sqlfluff",
         "eslint_d",
         "yamllint",
         "jsonlint",
@@ -161,7 +159,6 @@ return {
 
         -- Formatters/Linters
         "ktlint",
-        "dcm",
       })
       require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
