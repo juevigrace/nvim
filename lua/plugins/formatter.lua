@@ -61,6 +61,9 @@ return { -- Autoformat
 
     local config = vim.tbl_deep_extend("force", opts, {
       formatters = {
+        clang_format = {
+          prepend_args = { "--style={BasedOnStyle: WebKit, BreakBeforeBraces: Attach, IndentWidth: 2}" },
+        },
         stylua = {
           -- Use config from Neovim config directory if no local config
           prepend_args = function(ctx)

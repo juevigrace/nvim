@@ -21,6 +21,31 @@ return {
   { "j-hui/fidget.nvim", opts = {} },
   {
     "mfussenegger/nvim-dap",
+    config = function()
+      local dap = require("dap")
+      dap.adapters.codelldb = {
+        type = "server",
+        port = "${port}",
+        executable = {
+          command = vim.fn.exepath("codelldb"),
+          args = { "--port", "${port}" },
+        },
+      }
+      dap.configurations.c = {
+        {
+          name = "Launch",
+          type = "codelldb",
+          request = "launch",
+          program = function()
+            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+          end,
+          cwd = "${workspaceFolder}",
+          stopOnEntry = false,
+          args = {},
+        },
+      }
+      dap.configurations.cpp = dap.configurations.c
+    end,
   },
   {
     "williamboman/mason.nvim",
@@ -47,7 +72,14 @@ return {
 
       local servers = {
         bashls = {},
-        clangd = {},
+        clangd = {
+          cmd = {
+            "clangd",
+            "--clang-tidy",
+            "--background-index",
+            "--header-insertion=iwyu",
+          },
+        },
         gopls = {},
         templ = {},
         pyright = {},
@@ -137,6 +169,7 @@ return {
         "shfmt",
 
         -- DAPs
+        "codelldb",
         -- "bash-debug-adapter",
         -- "kotlin-debug-adapter",
         -- "debugpy",
@@ -153,7 +186,6 @@ return {
         "jsonlint",
         "htmlhint",
         "stylelint",
-        "cpplint",
         "hadolint",
         "checkmake",
 
