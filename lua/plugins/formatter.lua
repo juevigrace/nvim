@@ -67,7 +67,9 @@ return { -- Autoformat
             if local_config ~= "" then
               return {} -- use the local .clang-format
             else
-              return { "--style={BasedOnStyle: WebKit, IndentWidth: 2, BreakBeforeBraces: Attach}" }
+              return {
+                "--style={BasedOnStyle: WebKit, IndentWidth: 2, BreakBeforeBraces: Attach, PointerAlignment: Right}",
+              }
             end
           end,
         },
