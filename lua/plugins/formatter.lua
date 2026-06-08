@@ -54,6 +54,7 @@ return { -- Autoformat
       sql = { "sqlfmt" },
       cpp = { "clang_format" },
       c = { "clang_format" },
+      python = { "black" },
     },
   },
   config = function(_, opts)
