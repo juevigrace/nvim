@@ -1,3 +1,4 @@
+require("config.remote_clipboard").setup()
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
