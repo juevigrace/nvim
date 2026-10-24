@@ -51,7 +51,15 @@ return {
     "williamboman/mason.nvim",
     keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
     build = ":MasonUpdate",
-    opts = {},
+    opts = {
+      -- The upstream registry still points kotlin-lsp at a dead CDN host.
+      -- The local Lua registry overrides that one package; everything else
+      -- still comes from the upstream registry.
+      registries = {
+        "lua:mason_registry_overrides",
+        "github:mason-org/mason-registry",
+      },
+    },
   },
   {
     "williamboman/mason-lspconfig.nvim",
@@ -61,14 +69,16 @@ return {
       "WhoIsSethDaniel/mason-tool-installer.nvim",
     },
     config = function()
-      -- LSP servers and clients are able to communicate to each other what features they support.
-      --  By default, Neovim doesn't support everything that is in the LSP specification.
-      --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
-      --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
       local lspconfig = require("lspconfig.util")
 
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
+      -- nvim-lspconfig v2: apply the cmp capabilities to every server.
+      vim.lsp.config("*", {
+        capabilities = vim.tbl_deep_extend(
+          "force",
+          vim.lsp.protocol.make_client_capabilities(),
+          require("cmp_nvim_lsp").default_capabilities()
+        ),
+      })
 
       local servers = {
         bashls = {},
@@ -86,7 +96,6 @@ return {
         sqlls = {},
         gradle_ls = {},
         kotlin_lsp = {
-          cmd = { "/usr/bin/kotlin-lsp" },
           root_markers = {
             "gradlew",
             ".git",
@@ -96,17 +105,10 @@ return {
             "build.gradle",
             "build.gradle.kts",
           },
-          jvm_args = {
-            "-Xmx4g", -- Increase max heap (useful for large projects)
-          },
         },
         jdtls = {},
         html = {
           filetypes = { "html", "astro" },
-        },
-        htmx = {
-          -- Other htmx_lsp configurations...
-          filetypes = { "html", "astro", "templ" }, -- Add 'astro' if htmx_lsp also handles .astro files for HTML
         },
         cssls = {},
         tailwindcss = {},
@@ -116,8 +118,26 @@ return {
         yamlls = {},
         dockerls = {},
         docker_compose_language_service = {},
-        -- nil_ls = {},
-        -- harper_ls = {},
+        nixd = {
+          settings = {
+            nixd = {
+              nixpkgs = {
+                expr = 'import (builtins.getFlake "/home/juevigrace/Projects/nixos").inputs.nixpkgs { }',
+              },
+              formatting = {
+                command = { "alejandra" },
+              },
+              options = {
+                nixos = {
+                  expr = string.format(
+                    '(builtins.getFlake "/home/juevigrace/Projects/nixos").nixosConfigurations.%s.options',
+                    vim.fn.hostname()
+                  ),
+                },
+              },
+            },
+          },
+        },
         rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -153,7 +173,13 @@ return {
         },
       }
 
-      local ensure_installed = vim.tbl_keys(servers or {})
+      -- nixd is installed by Nix, so don't ask Mason to install it.
+      local ensure_installed = {}
+      for name in pairs(servers) do
+        if name ~= "nixd" then
+          table.insert(ensure_installed, name)
+        end
+      end
       vim.list_extend(ensure_installed, {
         -- Formatters
         "stylua", -- Used to format Lua code
@@ -194,20 +220,15 @@ return {
       })
       require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
-      require("mason-lspconfig").setup({
-        ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
-        automatic_installation = false,
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-            require("lspconfig")[server_name].setup(server)
-          end,
-        },
-      })
+      -- nvim-lspconfig v2: apply the per-server overrides above and enable
+      -- each one. mason-lspconfig's automatic_enable covers anything Mason
+      -- installs; nixd comes from Nix and is enabled by this loop.
+      for name, server in pairs(servers) do
+        vim.lsp.config(name, server)
+        vim.lsp.enable(name)
+      end
+
+      require("mason-lspconfig").setup({})
     end,
   },
   {
