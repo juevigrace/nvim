@@ -205,7 +205,6 @@ return {
 
         -- Linters
         "shellcheck",
-        "gospel",
         "pylint",
         "eslint_d",
         "yamllint",
