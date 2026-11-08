@@ -88,6 +88,7 @@ return {
             "--clang-tidy",
             "--background-index",
             "--header-insertion=iwyu",
+            "--query-driver=/run/current-system/sw/bin/clang*,/nix/store/*/bin/clang*,/etc/profiles/per-user/*/bin/gcc*",
           },
         },
         gopls = {},
