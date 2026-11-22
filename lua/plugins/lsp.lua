@@ -23,11 +23,18 @@ return {
     "mfussenegger/nvim-dap",
     config = function()
       local dap = require("dap")
+      -- Resolve at config time, but fall back to Mason's bin directory: Mason
+      -- prepends its bin path later, after plugin config has run.
+      local codelldb = vim.fn.exepath("codelldb")
+      if codelldb == "" then
+        codelldb = vim.fn.stdpath("data") .. "/mason/bin/codelldb"
+      end
+
       dap.adapters.codelldb = {
         type = "server",
         port = "${port}",
         executable = {
-          command = vim.fn.exepath("codelldb"),
+          command = codelldb,
           args = { "--port", "${port}" },
         },
       }

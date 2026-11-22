@@ -53,6 +53,11 @@ return {
         },
 
         before_highlight = function(group, highlight, palette)
+          -- Keep emphasis/bold on markdown tree-sitter captures: markview
+          -- relies on these groups to render **bold** and *italic* text.
+          if group:match("^@markup") or group:match("^@text") then
+            return
+          end
           if highlight.italic then
             highlight.italic = false
           end
@@ -72,25 +77,6 @@ return {
       -- vim.cmd("colorscheme rose-pine-moon")
       -- vim.cmd("colorscheme rose-pine-dawn")
       pcall(vim.cmd.colorscheme, "rose-pine-moon")
-
-      -- Force redraw to update all UI elements
-      vim.cmd("redraw!")
-
-      local transparency_file = vim.fn.stdpath("config") .. "/plugin/after/transparency.lua"
-
-      -- Reload transparency settings
-      if vim.fn.filereadable(transparency_file) == 1 then
-        vim.defer_fn(function()
-          vim.cmd.source(transparency_file)
-
-          -- Trigger UI updates for various plugins
-          vim.cmd("doautocmd ColorScheme")
-          vim.cmd("doautocmd VimEnter")
-
-          -- Final redraw
-          vim.cmd("redraw!")
-        end, 5)
-      end
     end,
   },
 }

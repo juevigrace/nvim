@@ -21,23 +21,17 @@ return {
       require("mini.surround").setup()
 
       require("mini.icons").setup({
-        lazy = true,
-        opts = {
-          file = {
-            [".keep"] = { glyph = "󰊢", hl = "MiniIconsGrey" },
-            ["devcontainer.json"] = { glyph = "", hl = "MiniIconsAzure" },
-          },
-          filetype = {
-            dotenv = { glyph = "", hl = "MiniIconsYellow" },
-          },
+        file = {
+          [".keep"] = { glyph = "󰊢", hl = "MiniIconsGrey" },
+          ["devcontainer.json"] = { glyph = "", hl = "MiniIconsAzure" },
         },
-        init = function()
-          package.preload["nvim-web-devicons"] = function()
-            require("mini.icons").mock_nvim_web_devicons()
-            return package.loaded["nvim-web-devicons"]
-          end
-        end,
+        filetype = {
+          dotenv = { glyph = "", hl = "MiniIconsYellow" },
+        },
       })
+
+      -- Let plugins that expect nvim-web-devicons use mini.icons instead.
+      require("mini.icons").mock_nvim_web_devicons()
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim

@@ -1,9 +1,14 @@
 return { -- Highlight, edit, and navigate code
   "nvim-treesitter/nvim-treesitter",
-  branch = "master", -- Lock to master for Neovim 0.11/0.13 compatibility
+  branch = "master", -- `main` needs the tree-sitter CLI and a different config API
   build = ":TSUpdate",
-  cmd = { "TSUpdate", "TSInstall" },
-  main = "nvim-treesitter.configs", -- Sets main module to use for opts
+  -- This must not be lazy-loaded: `opts` (highlight/indent setup) only runs
+  -- once the plugin is loaded. Lazy-loading it via `cmd` disables treesitter.
+  lazy = false,
+  config = function(_, opts)
+    require("config.treesitter_compat").setup()
+    require("nvim-treesitter.configs").setup(opts)
+  end,
   keys = {
     { "<c-space>", desc = "Increment Selection" },
     { "<bs>", desc = "Decrement Selection", mode = "x" },
@@ -57,7 +62,7 @@ return { -- Highlight, edit, and navigate code
       -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
       --  If you are experiencing weird indenting issues, add the language to
       --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-      additional_vim_regex_highlighting = { "ruby", "markdown" },
+      additional_vim_regex_highlighting = { "ruby" },
     },
     indent = { enable = true, disable = { "ruby", "c", "cpp" } },
   },

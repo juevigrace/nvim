@@ -54,6 +54,17 @@ local groups = {
 	"NotifyDEBUGBorder",
 }
 
-for _, name in ipairs(groups) do
-	make_transparent(name)
+local function apply_transparency()
+	for _, name in ipairs(groups) do
+		make_transparent(name)
+	end
 end
+
+apply_transparency()
+
+-- Re-apply after every colorscheme change so the transparency isn't lost.
+vim.api.nvim_create_autocmd("ColorScheme", {
+	group = vim.api.nvim_create_augroup("config-transparency", { clear = true }),
+	callback = apply_transparency,
+	desc = "Keep configured highlight groups transparent",
+})

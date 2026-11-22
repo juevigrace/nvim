@@ -14,13 +14,6 @@ autocmd("TextYankPost", {
   end,
 })
 
-autocmd("VimEnter", {
-  desc = "Update treesitter",
-  callback = function()
-    vim.cmd("TSUpdate")
-  end,
-})
-
 autocmd({ "BufRead", "BufNewFile" }, {
   pattern = "*.kts",
   callback = function()
